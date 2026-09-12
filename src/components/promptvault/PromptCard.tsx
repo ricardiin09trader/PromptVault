@@ -8,6 +8,7 @@ import {
   ImageIcon,
   Check,
   Play,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ export function PromptCard({
   const hasImage = Boolean(prompt.image);
   const hasVideo = Boolean(prompt.videoUrl);
   const showVideoThumb = hasVideo && !hasImage;
+  const isNew = Boolean(prompt.isNew);
 
   const handleCopy = async () => {
     const ok = await copyText(prompt.prompt);
@@ -64,15 +66,15 @@ export function PromptCard({
   if (!hasImage && !hasVideo) {
     return (
       <article className="group glass relative rounded-xl overflow-hidden transition-all duration-300 hover:border-white/15 hover:shadow-lg hover:shadow-black/20">
-        <div className="flex items-center gap-2.5 p-2.5 sm:p-3.5">
+        <div className="flex items-center gap-2 p-2.5 sm:p-3">
           {/* Type icon */}
           <span
             className={cn(
-              "inline-flex items-center justify-center shrink-0 rounded-lg border h-9 w-9 sm:h-10 sm:w-10",
+              "inline-flex items-center justify-center shrink-0 rounded-lg border h-8 w-8 sm:h-9 sm:w-9",
               TYPE_STYLE[prompt.type]
             )}
           >
-            <TypeIcon type={prompt.type} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <TypeIcon type={prompt.type} className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           </span>
 
           {/* Text */}
@@ -82,38 +84,43 @@ export function PromptCard({
             className="flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/60 rounded"
             aria-label={`Ver detalhes de ${prompt.title}`}
           >
-            <h3 className="text-[13px] sm:text-[14px] font-semibold leading-tight line-clamp-1 text-foreground">
+            <h3 className="text-[12px] sm:text-sm font-semibold leading-tight line-clamp-1 text-foreground">
               {prompt.title}
+              {isNew && (
+                <span className="ml-1.5 inline-flex items-center rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1 py-px text-[7px] font-bold uppercase tracking-wider text-emerald-300">
+                  NOVO
+                </span>
+              )}
             </h3>
-            <p className="mt-0.5 text-[11px] sm:text-[12px] text-muted-foreground/70 leading-snug line-clamp-1">
+            <p className="mt-0.5 text-[10px] sm:text-[11px] text-muted-foreground/70 leading-snug line-clamp-1">
               {prompt.description}
             </p>
           </button>
 
           {/* Actions */}
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             <Button
               type="button"
               onClick={handleCopy}
               size="sm"
               className={cn(
-                "h-7 sm:h-8 px-2 sm:px-3 gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold border-0 transition-all active:scale-[0.97] rounded-lg",
+                "h-7 px-2 gap-1 text-[10px] font-bold border-0 transition-all active:scale-[0.97] rounded-lg",
                 copied
                   ? "bg-emerald-500/90 text-white"
                   : "bg-brand-gradient text-white hover:brightness-110"
               )}
             >
               {copied ? (
-                <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <Check className="h-3 w-3" />
               ) : (
-                <Copy className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <Copy className="h-3 w-3" />
               )}
             </Button>
             <button
               type="button"
               onClick={() => onToggleFavorite(prompt.id)}
               className={cn(
-                "grid h-7 w-7 sm:h-8 sm:w-8 shrink-0 place-items-center rounded-lg border transition-all",
+                "grid h-7 w-7 shrink-0 place-items-center rounded-lg border transition-all",
                 isFavorite
                   ? "border-brand-pink/40 bg-brand-pink/20 text-brand-pink"
                   : "border-white/10 bg-white/5 text-muted-foreground/70 hover:text-brand-pink hover:border-brand-pink/40"
@@ -122,7 +129,7 @@ export function PromptCard({
             >
               <Heart
                 className={cn(
-                  "h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform",
+                  "h-3 w-3 transition-transform",
                   isFavorite && "fill-current scale-110"
                 )}
               />
@@ -135,7 +142,10 @@ export function PromptCard({
 
   /* ─── FULL CARD (with reference image) ─── */
   return (
-    <article className="group glass relative rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:shadow-xl hover:shadow-black/30 flex flex-col">
+    <article className={cn(
+      "group glass relative rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:shadow-xl hover:shadow-black/30 flex flex-col",
+      isNew && "ring-1 ring-emerald-400/20"
+    )}>
       {/* Image / Video thumb */}
       <button
         type="button"
@@ -174,13 +184,21 @@ export function PromptCard({
         {/* Type badge */}
         <span
           className={cn(
-            "absolute left-2.5 top-2.5 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 sm:px-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider backdrop-blur-md",
+            "absolute left-2 top-2 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider backdrop-blur-md",
             TYPE_STYLE[prompt.type]
           )}
         >
           <TypeIcon type={prompt.type} className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
           {prompt.type}
         </span>
+
+        {/* NOVO badge */}
+        {isNew && (
+          <span className="absolute right-2 top-2 sm:right-3 sm:top-3 z-10 inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+            <Sparkles className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
+            NOVO
+          </span>
+        )}
       </button>
 
       {/* Favorite */}
@@ -188,7 +206,8 @@ export function PromptCard({
         type="button"
         onClick={() => onToggleFavorite(prompt.id)}
         className={cn(
-          "absolute right-2.5 top-2.5 sm:right-3 sm:top-3 z-10 grid h-7 w-7 sm:h-8 sm:w-8 place-items-center rounded-full border backdrop-blur-md transition-all",
+          "absolute right-2 top-2 sm:right-3 sm:top-3 z-10 grid h-7 w-7 sm:h-8 sm:w-8 place-items-center rounded-full border backdrop-blur-md transition-all",
+          isNew && "right-2 top-8 sm:right-3 sm:top-10",
           isFavorite
             ? "border-brand-pink/40 bg-brand-pink/20 text-brand-pink"
             : "border-white/10 bg-black/25 text-white/70 hover:text-brand-pink hover:border-brand-pink/40"
@@ -201,21 +220,21 @@ export function PromptCard({
       </button>
 
       {/* Body */}
-      <div className="flex flex-1 flex-col p-2.5 sm:p-4 pb-2 sm:pb-3">
-        <h3 className="text-[12px]* sm:text-[15px] text-sm sm:text-[15px] font-bold leading-tight line-clamp-1 text-foreground">
+      <div className="flex flex-1 flex-col p-2 sm:p-3 pb-1.5 sm:pb-2.5">
+        <h3 className="text-[11px] sm:text-sm font-bold leading-tight line-clamp-1 text-foreground">
           {prompt.title}
         </h3>
-        <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[13px] text-muted-foreground/80 leading-relaxed line-clamp-2">
+        <p className="mt-0.5 text-[9px] sm:text-xs text-muted-foreground/80 leading-relaxed line-clamp-2">
           {prompt.description}
         </p>
 
-        <div className="mt-auto pt-2 sm:pt-3 flex items-center gap-1.5 sm:gap-2">
+        <div className="mt-auto pt-1.5 sm:pt-2 flex items-center gap-1.5">
           <Button
             type="button"
             onClick={handleCopy}
             size="sm"
             className={cn(
-              "h-7 sm:h-9 flex-1 gap-1 sm:gap-1.5 text-[10px] sm:text-sm font-bold border-0 transition-all active:scale-[0.97]",
+              "h-7 sm:h-8 flex-1 gap-1 text-[10px] sm:text-xs font-bold border-0 transition-all active:scale-[0.97]",
               copied
                 ? "bg-emerald-500/90 text-white"
                 : "bg-brand-gradient text-white hover:brightness-110"
@@ -223,13 +242,13 @@ export function PromptCard({
           >
             {copied ? (
               <>
-                <Check className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Copiado</span>
+                <Check className="h-3 w-3" />
+                <span className="sm:inline">OK</span>
               </>
             ) : (
               <>
-                <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Copiar</span>
+                <Copy className="h-3 w-3" />
+                <span className="sm:inline">Copiar</span>
               </>
             )}
           </Button>
@@ -238,9 +257,9 @@ export function PromptCard({
             variant="outline"
             size="sm"
             onClick={() => onOpen(prompt)}
-            className="h-7 w-7 sm:h-9 sm:w-9 p-0 border-white/10 bg-white/5 text-foreground/70 hover:bg-white/10 hover:text-foreground"
+            className="h-7 w-7 sm:h-8 sm:w-8 p-0 border-white/10 bg-white/5 text-foreground/70 hover:bg-white/10 hover:text-foreground"
           >
-            <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Eye className="h-3 w-3" />
           </Button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Sparkles, Heart, ChevronDown, Film, ArrowRight, Zap } from "lucide-react";
+import { Sparkles, Heart, ChevronDown, Film, ArrowRight, Zap, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PROMPTS, type Prompt } from "@/lib/prompts";
 import { useFavoritesStore } from "@/lib/favorites-store";
@@ -55,6 +55,14 @@ export function Gallery() {
   const isVideosNoRef = filter.kind === "videos-no-ref";
   const isVideosWithRef = filter.kind === "videos-with-ref";
 
+  // Featured new prompts for the "all" view
+  const isNewFilter = filter.kind === "novidades" || filter.kind === "updates";
+  const isAllFilter = filter.kind === "all" && !query.trim();
+  const newPrompts = useMemo(() => {
+    if (!isAllFilter) return [];
+    return PROMPTS.filter((p) => p.isNew && (p.image || p.videoUrl)).slice(0, 8);
+  }, [isAllFilter]);
+
   const handleToggleFav = (id: string) => {
     const r = toggleFav(id);
     if (r === "added") toast.success("Adicionado aos favoritos.");
@@ -72,6 +80,7 @@ export function Gallery() {
         <Sidebar filter={filter} onSelect={setFilter} />
         <MobileSidebar filter={filter} onSelect={setFilter} open={mobileOpen} onOpenChange={setMobileOpen} />
         <main className="flex-1 min-w-0">
+          {/* Mobile header */}
           <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between border-b border-white/5 bg-background/80 px-4 py-3 backdrop-blur-xl">
             <div className="flex items-center gap-2.5">
               <div className="grid h-8 w-8 place-items-center rounded-lg bg-brand-gradient glow-purple"><Sparkles className="h-4 w-4 text-white" /></div>
@@ -82,40 +91,89 @@ export function Gallery() {
               {favIds.length > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand-pink px-1 text-[10px] font-bold text-black">{favIds.length}</span>}
             </Button>
           </div>
-          {/* Update 12/09 Banner */}
-          <div className="mx-4 sm:mx-6 lg:mx-8 mt-4 mb-0 rounded-xl border border-brand-pink/20 bg-gradient-to-r from-brand-pink/[0.08] via-brand-purple/[0.06] to-brand-cyan/[0.04] px-4 py-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-brand-gradient shadow-md shadow-brand-purple/20">
-                <Zap className="h-4 w-4 text-white" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">Atualização 12/09</p>
-                <p className="text-[11px] text-muted-foreground truncate">Novos prompts, formatos e referências adicionados à biblioteca</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setFilter({ kind: "novidades" })}
-              className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-brand-gradient px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:brightness-110 transition-all active:scale-95"
-            >
-              Ver novidades
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
+
           <div className="px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-7">
             <SearchBar query={query} onQueryChange={setQuery} filter={filter} onFilterChange={setFilter} onOpenMenu={() => setMobileOpen(true)} />
+
+            {/* Featured "Novidades" horizontal scroll - only on "all" filter */}
+            {newPrompts.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="grid h-7 w-7 place-items-center rounded-lg bg-brand-gradient shadow-md shadow-brand-purple/20">
+                      <Sparkles className="h-3.5 w-3.5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">Novidades</p>
+                      <p className="text-[10px] text-muted-foreground">Prompts adicionados recentemente</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFilter({ kind: "novidades" })}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-purple hover:text-brand-pink transition-colors"
+                  >
+                    Ver todos
+                    <ChevronRight className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory" style={{ scrollbarWidth: "none" }}>
+                  {newPrompts.map((prompt) => (
+                    <button
+                      key={prompt.id}
+                      type="button"
+                      onClick={() => openModal(prompt)}
+                      className="group relative shrink-0 w-36 sm:w-44 snap-start rounded-xl overflow-hidden border border-white/10 bg-white/5 transition-all hover:border-brand-purple/30 hover:shadow-lg hover:shadow-brand-purple/10"
+                    >
+                      <div className="aspect-[3/4] w-full bg-white/5 overflow-hidden">
+                        {prompt.image ? (
+                          <img
+                            src={prompt.image}
+                            alt={prompt.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+                          />
+                        ) : prompt.videoUrl ? (
+                          <video
+                            src={prompt.videoUrl}
+                            muted
+                            playsInline
+                            preload="metadata"
+                            className="h-full w-full object-cover opacity-80"
+                          />
+                        ) : null}
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      {/* NOVO badge */}
+                      <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-px text-[8px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+                        <Sparkles className="h-2 w-2" />
+                        NOVO
+                      </span>
+                      {/* Title overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-2">
+                        <p className="text-[11px] font-semibold leading-tight line-clamp-2 text-white">{prompt.title}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Filter info bar */}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs sm:text-sm text-muted-foreground">
                 Mostrando <span className="font-semibold text-foreground">{visible.length}</span> de{" "}
                 <span className="font-semibold text-foreground">{filtered.length}</span> prompts
                 {filter.kind !== "all" && (<> em <span className="font-semibold text-gradient-brand">{activeLabel}</span></>)}
               </p>
-              {filter.kind === "updates" && (
+              {(isNewFilter || filter.kind === "updates") && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-cyan/30 bg-brand-cyan/10 px-3 py-1 text-[11px] font-medium text-brand-cyan">
                   <Sparkles className="h-3 w-3" /> Novidades no acervo
                 </span>
               )}
             </div>
+
             {visible.length === 0 ? (
               <EmptyState onReset={handleReset} />
             ) : isVideosNoRef ? (
