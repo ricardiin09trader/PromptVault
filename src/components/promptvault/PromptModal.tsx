@@ -60,15 +60,15 @@ export function PromptModal({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          "p-0 gap-0 overflow-hidden rounded-3xl border-white/10 bg-popover/95 backdrop-blur-2xl",
+          "p-0 gap-0 overflow-hidden rounded-2xl sm:rounded-3xl border-white/10 bg-popover/95 backdrop-blur-2xl",
           hasMedia ? "max-w-4xl" : "max-w-2xl"
         )}
       >
         {prompt && (
-          <div className={cn("grid max-h-[92vh]", hasMedia ? "md:grid-cols-5" : "grid-cols-1")}>
+          <div className={cn("grid max-h-[88vh] sm:max-h-[92vh]", hasMedia ? "md:grid-cols-5" : "grid-cols-1")}>
             {/* Image side */}
             {hasImage && (
-              <div className="relative md:col-span-2 md:h-auto h-56 sm:h-72 md:max-h-[92vh] bg-white/5">
+              <div className="relative md:col-span-2 md:h-auto h-44 sm:h-56 md:max-h-[92vh] bg-white/5">
                 <img
                   src={prompt.image}
                   alt={prompt.title}
@@ -93,7 +93,7 @@ export function PromptModal({
 
             {/* Video side (when no image but has videoUrl) */}
             {hasVideo && !hasImage && (
-              <div className="relative md:col-span-2 md:h-auto h-48 sm:h-64 md:max-h-[92vh] bg-black/60">
+              <div className="relative md:col-span-2 md:h-auto h-40 sm:h-56 md:max-h-[92vh] bg-black/60">
                 <video
                   src={prompt.videoUrl}
                   controls
@@ -114,7 +114,7 @@ export function PromptModal({
             )}
 
             {hasImage && hasVideo && (
-              <div className="relative md:col-span-5 h-48 sm:h-56 bg-black/60">
+              <div className="relative md:col-span-5 h-36 sm:h-48 bg-black/60">
                 <video
                   src={prompt.videoUrl}
                   controls
@@ -135,7 +135,7 @@ export function PromptModal({
             )}
 
             {/* Details side */}
-            <div className={cn("relative flex flex-col p-5 sm:p-7 overflow-hidden", hasMedia ? "md:col-span-3" : "")}>
+            <div className={cn("relative flex flex-col p-4 sm:p-5 md:p-7 overflow-y-auto overscroll-contain", hasMedia ? "md:col-span-3" : "")}>
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
@@ -161,14 +161,14 @@ export function PromptModal({
                 </span>
               )}
 
-              <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight pr-10">
+              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight pr-10">
                 {prompt.title}
               </DialogTitle>
               <DialogDescription className="sr-only">
                 Detalhes do prompt {prompt.title}
               </DialogDescription>
 
-              <p className="mt-2 text-sm text-muted-foreground/80 leading-relaxed">
+              <p className="mt-1.5 text-xs sm:text-sm text-muted-foreground/80 leading-relaxed line-clamp-2 sm:line-clamp-none">
                 {prompt.description}
               </p>
 
@@ -189,15 +189,15 @@ export function PromptModal({
                 <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60">
                   Prompt
                 </p>
-                <ScrollArea className="max-h-[38vh] md:max-h-none scrollbar-premium">
+                <ScrollArea className="max-h-[32vh] sm:max-h-[38vh] md:max-h-none scrollbar-premium">
                   <div className="relative rounded-xl border border-white/8 bg-black/30">
-                    <pre className="whitespace-pre-wrap break-words p-4 text-[13px] leading-[1.7] text-foreground/90 font-mono selection:bg-brand-purple/30">
+                    <pre className="whitespace-pre-wrap break-words p-3 sm:p-4 text-[11px] sm:text-[13px] leading-[1.6] sm:leading-[1.7] text-foreground/90 font-mono selection:bg-brand-purple/30">
                       {prompt.prompt}
                     </pre>
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="absolute right-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-[11px] font-bold text-white/90 backdrop-blur-md transition-all hover:bg-black/70 active:scale-95"
+                      className="absolute right-2 top-2 sm:right-2.5 sm:top-2.5 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/50 px-2 py-1 sm:px-2.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold text-white/90 backdrop-blur-md transition-all hover:bg-black/70 active:scale-95"
                     >
                       {copied ? (
                         <>
@@ -216,12 +216,12 @@ export function PromptModal({
               </div>
 
               {/* Bottom actions */}
-              <div className="mt-5 flex items-center gap-2">
+              <div className="mt-4 sm:mt-5 flex items-center gap-2">
                 <Button
                   type="button"
                   onClick={handleCopy}
                   className={cn(
-                    "h-11 flex-1 gap-2 text-[15px] font-bold border-0 transition-all active:scale-[0.97]",
+                    "h-10 sm:h-11 flex-1 gap-1.5 sm:gap-2 text-[13px] sm:text-[15px] font-bold border-0 transition-all active:scale-[0.97]",
                     copied
                       ? "bg-emerald-500/90 text-white hover:bg-emerald-500"
                       : "bg-brand-gradient text-white hover:brightness-110"

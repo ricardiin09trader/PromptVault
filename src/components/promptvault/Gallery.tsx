@@ -102,10 +102,10 @@ export function Gallery() {
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-7">
+          <div className="px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 lg:space-y-7">
             <SearchBar query={query} onQueryChange={setQuery} filter={filter} onFilterChange={setFilter} onOpenMenu={() => setMobileOpen(true)} />
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Mostrando <span className="font-semibold text-foreground">{visible.length}</span> de{" "}
                 <span className="font-semibold text-foreground">{filtered.length}</span> prompts
                 {filter.kind !== "all" && (<> em <span className="font-semibold text-gradient-brand">{activeLabel}</span></>)}
@@ -119,17 +119,17 @@ export function Gallery() {
             {visible.length === 0 ? (
               <EmptyState onReset={handleReset} />
             ) : isVideosNoRef ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-2.5">
                 {visible.map((prompt) => <PromptCard key={prompt.id} prompt={prompt} isFavorite={isFav(prompt.id)} onToggleFavorite={handleToggleFav} onOpen={openModal} />)}
               </div>
             ) : isVideosWithRef ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
                 {visible.map((prompt) => <PromptCard key={prompt.id} prompt={prompt} isFavorite={isFav(prompt.id)} onToggleFavorite={handleToggleFav} onOpen={openModal} />)}
               </div>
             ) : (
               <div className="space-y-6">
                 {hasPreviewCards && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
                     {previewCards.map((prompt) => <PromptCard key={prompt.id} prompt={prompt} isFavorite={isFav(prompt.id)} onToggleFavorite={handleToggleFav} onOpen={openModal} />)}
                   </div>
                 )}
@@ -144,7 +144,7 @@ export function Gallery() {
                       </div>
                       <div className="flex-1 h-px bg-white/10" />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+                    <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-2.5">
                       {noPreviewCards.map((prompt) => <PromptCard key={prompt.id} prompt={prompt} isFavorite={isFav(prompt.id)} onToggleFavorite={handleToggleFav} onOpen={openModal} />)}
                     </div>
                   </div>
