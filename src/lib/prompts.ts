@@ -14,6 +14,7 @@ export type PromptCategory =
   | "POV Acessórios"
   | "POV Moda"
   | "POV Casa"
+  | "POV Cenário"
   | "UGC"
   | "Produto"
   | "TikTok Shop"
@@ -26,7 +27,9 @@ export type PromptCategory =
   | "Natal"
   | "Natal Pet"
   | "Natal POV"
+  | "Natal POV Pet"
   | "Natal Gancho"
+  | "Natal Gancho Pet"
   | "Gancho"
   | "Gancho Masculino"
   | "Transição"
@@ -35,7 +38,10 @@ export type PromptCategory =
   | "Moda"
   | "Moda Moto"
   | "Movimento"
-  | "Lingerie";
+  | "Lingerie"
+  | "Cenário"
+  | "Roupas"
+  | "Manequim";
 
 export interface Prompt {
   id: string;
@@ -57,6 +63,8 @@ export interface Prompt {
   isNew?: boolean;
   /** External hosted video URL (for video-type prompts). */
   videoUrl?: string;
+  /** Additional reference images for the prompt (input references, not output). */
+  referenceImages?: string[];
 }
 
 /**
@@ -83,6 +91,7 @@ export const CATEGORIES: PromptCategory[] = [
   "POV Acessórios",
   "POV Moda",
   "POV Casa",
+  "POV Cenário",
   "Produto",
   "UGC",
   "Selfie",
@@ -96,7 +105,9 @@ export const CATEGORIES: PromptCategory[] = [
   "Natal",
   "Natal Pet",
   "Natal POV",
+  "Natal POV Pet",
   "Natal Gancho",
+  "Natal Gancho Pet",
   "Gancho",
   "Gancho Masculino",
   "Transição",
@@ -106,6 +117,9 @@ export const CATEGORIES: PromptCategory[] = [
   "Moda Moto",
   "Movimento",
   "Lingerie",
+  "Cenário",
+  "Roupas",
+  "Manequim",
 ];
 
 export const TYPE_BADGES: PromptType[] = [
