@@ -143,6 +143,95 @@
   }
 }
 
+/* ─── Content Protection CSS ─── */
+
+/* Global: block user-select on most elements */
+[data-protected],
+.glass,
+article,
+.prompt-card,
+.preview-image,
+.gallery-card,
+.modal-preview {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Images: block drag & pointer events for right-click */
+img[data-protected],
+img.protected-img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* Video: block drag */
+video[data-protected],
+video.protected-video {
+  -webkit-user-drag: none;
+}
+
+/* Mobile: block long-press on images and cards */
+@media (pointer: coarse) {
+  img,
+  video,
+  [data-protected],
+  article,
+  .glass {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Exceptions: allow selection & interaction on inputs, search, prompt text */
+input,
+textarea,
+[data-allow-select],
+[data-prompt-text],
+[data-allow-context] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  pointer-events: auto !important;
+  -webkit-touch-callout: default !important;
+}
+
+/* Watermark overlay */
+.pv-watermark::after {
+  content: "PromptVault";
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: oklch(1 0 0 / 0.18);
+  text-shadow: 0 1px 3px oklch(0 0 0 / 0.5);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pv-watermark-strong::after {
+  content: "PromptVault";
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: oklch(1 0 0 / 0.25);
+  text-shadow: 0 1px 4px oklch(0 0 0 / 0.6);
+  pointer-events: none;
+  z-index: 2;
+}
+
 @layer utilities {
   /* Glassmorphism surface */
   .glass {

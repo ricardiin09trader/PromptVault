@@ -65,7 +65,7 @@ export function PromptCard({
   /* ─── COMPACT CARD (no preview at all — no image AND no video) ─── */
   if (!hasImage && !hasVideo) {
     return (
-      <article className="group glass relative rounded-xl overflow-hidden transition-all duration-300 hover:border-white/15 hover:shadow-lg hover:shadow-black/20">
+      <article className="group glass relative rounded-xl overflow-hidden transition-all duration-300 hover:border-white/15 hover:shadow-lg hover:shadow-black/20" data-protected data-no-select>
         <div className="flex items-center gap-2 p-2.5 sm:p-3">
           {/* Type icon */}
           <span
@@ -103,6 +103,7 @@ export function PromptCard({
               type="button"
               onClick={handleCopy}
               size="sm"
+              data-copy-prompt
               className={cn(
                 "h-7 px-2 gap-1 text-[10px] font-bold border-0 transition-all active:scale-[0.97] rounded-lg",
                 copied
@@ -145,15 +146,15 @@ export function PromptCard({
     <article className={cn(
       "group glass relative rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:shadow-xl hover:shadow-black/30 flex flex-col",
       isNew && "ring-1 ring-emerald-400/20"
-    )}>
-      {/* Image / Video thumb */}
+    )} data-protected data-no-select>
+      {/* Image / Video thumb — with protective overlay */}
       <button
         type="button"
         onClick={() => onOpen(prompt)}
         className="relative block w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/60"
         aria-label={`Ver detalhes de ${prompt.title}`}
       >
-        <div className="aspect-[3/4] sm:aspect-[4/5] w-full bg-white/5">
+        <div className="aspect-[3/4] sm:aspect-[4/5] w-full bg-white/5 relative pv-watermark">
           {showVideoThumb ? (
             <div className="relative h-full w-full bg-black/40">
               <video
@@ -161,7 +162,8 @@ export function PromptCard({
                 muted
                 playsInline
                 preload="metadata"
-                className="h-full w-full object-cover opacity-80 transition-opacity duration-300 group-hover:opacity-100"
+                draggable={false}
+                className="h-full w-full object-cover opacity-80 transition-opacity duration-300 group-hover:opacity-100 protected-video"
               />
               <div className="absolute inset-0 grid place-items-center">
                 <div className="grid h-10 w-10 sm:h-14 sm:w-14 place-items-center rounded-full bg-white/15 backdrop-blur-md border border-white/20 transition-transform duration-300 group-hover:scale-110">
@@ -175,16 +177,20 @@ export function PromptCard({
               alt={prompt.title}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              draggable={false}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] protected-img"
+              data-protected
             />
           )}
+          {/* Invisible overlay to block direct image interaction */}
+          <div className="absolute inset-0 z-[1]" aria-hidden="true" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
         {/* Type badge */}
         <span
           className={cn(
-            "absolute left-2 top-2 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider backdrop-blur-md",
+            "absolute left-2 top-2 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider backdrop-blur-md z-[2]",
             TYPE_STYLE[prompt.type]
           )}
         >
@@ -194,7 +200,7 @@ export function PromptCard({
 
         {/* NOVO badge */}
         {isNew && (
-          <span className="absolute right-2 top-2 sm:right-3 sm:top-3 z-10 inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+          <span className="absolute right-2 top-2 sm:right-3 sm:top-3 z-[2] inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
             <Sparkles className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
             NOVO
           </span>
@@ -233,6 +239,7 @@ export function PromptCard({
             type="button"
             onClick={handleCopy}
             size="sm"
+            data-copy-prompt
             className={cn(
               "h-7 sm:h-8 flex-1 gap-1 text-[10px] sm:text-xs font-bold border-0 transition-all active:scale-[0.97]",
               copied

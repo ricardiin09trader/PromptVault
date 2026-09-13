@@ -38,6 +38,8 @@ export function SearchBar({
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Buscar prompt por título, categoria ou objetivo…"
           className="h-10 pl-10 pr-10 bg-white/5 border-white/8 placeholder:text-muted-foreground/50 text-sm"
+          data-allow-context
+          data-allow-select
         />
         {query && (
           <button

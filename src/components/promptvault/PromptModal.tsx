@@ -64,21 +64,27 @@ export function PromptModal({
           "p-0 gap-0 overflow-hidden rounded-xl sm:rounded-2xl border-white/10 bg-popover/95 backdrop-blur-2xl",
           hasMedia ? "max-w-4xl" : "max-w-lg"
         )}
+        data-protected
+        data-no-select
       >
         {prompt && (
           <div className={cn("flex flex-col max-h-[90vh] sm:max-h-[92vh]", hasMedia && "md:grid md:grid-cols-5")}>
-            {/* Image side */}
+            {/* Image side — with protective overlay & watermark */}
             {hasImage && (
-              <div className="relative md:col-span-2 h-40 sm:h-56 md:h-auto md:max-h-[92vh] bg-white/5 shrink-0">
+              <div className="relative md:col-span-2 h-40 sm:h-56 md:h-auto md:max-h-[92vh] bg-white/5 shrink-0 pv-watermark-strong" data-protected>
                 <img
                   src={prompt.image}
                   alt={prompt.title}
-                  className="h-full w-full object-cover"
+                  draggable={false}
+                  className="h-full w-full object-cover protected-img"
+                  data-protected
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:bg-gradient-to-r" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:bg-gradient-to-r pointer-events-none" />
+                {/* Invisible overlay to block direct image interaction */}
+                <div className="absolute inset-0 z-[1]" aria-hidden="true" />
                 <span
                   className={cn(
-                    "absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md",
+                    "absolute left-3 top-3 z-[2] inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md",
                     TYPE_STYLE[prompt.type]
                   )}
                 >
@@ -90,7 +96,7 @@ export function PromptModal({
                   {prompt.type}
                 </span>
                 {isNew && (
-                  <span className="absolute right-3 top-3 inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+                  <span className="absolute right-3 top-3 z-[2] inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
                     <Sparkles className="h-2.5 w-2.5" />
                     NOVO
                   </span>
@@ -100,17 +106,20 @@ export function PromptModal({
 
             {/* Video side (when no image but has videoUrl) */}
             {hasVideo && !hasImage && (
-              <div className="relative md:col-span-2 h-36 sm:h-48 md:h-auto md:max-h-[92vh] bg-black/60 shrink-0">
+              <div className="relative md:col-span-2 h-36 sm:h-48 md:h-auto md:max-h-[92vh] bg-black/60 shrink-0" data-protected>
                 <video
                   src={prompt.videoUrl}
                   controls
                   playsInline
                   preload="metadata"
-                  className="h-full w-full object-contain"
+                  draggable={false}
+                  className="h-full w-full object-contain protected-video"
                 />
+                {/* Overlay over video to block right-click on video element */}
+                <div className="absolute inset-0 z-[1]" aria-hidden="true" />
                 <span
                   className={cn(
-                    "absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md",
+                    "absolute left-3 top-3 z-[2] inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md",
                     TYPE_STYLE[prompt.type]
                   )}
                 >
@@ -121,17 +130,19 @@ export function PromptModal({
             )}
 
             {hasImage && hasVideo && (
-              <div className="relative md:col-span-5 h-32 sm:h-44 bg-black/60 shrink-0">
+              <div className="relative md:col-span-5 h-32 sm:h-44 bg-black/60 shrink-0" data-protected>
                 <video
                   src={prompt.videoUrl}
                   controls
                   playsInline
                   preload="metadata"
-                  className="h-full w-full object-contain"
+                  draggable={false}
+                  className="h-full w-full object-contain protected-video"
                 />
+                <div className="absolute inset-0 z-[1]" aria-hidden="true" />
                 <span
                   className={cn(
-                    "absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md",
+                    "absolute left-3 top-3 z-[2] inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md",
                     TYPE_STYLE[prompt.type]
                   )}
                 >
@@ -197,18 +208,19 @@ export function PromptModal({
                 </div>
               )}
 
-              {/* Prompt text - the main copy target */}
+              {/* Prompt text — the main copy target, ALLOW selection here */}
               <div className="mt-3 flex-1 min-h-0">
                 <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
                   Prompt
                 </p>
-                <div className="relative rounded-lg border border-white/8 bg-black/30 max-h-[28vh] sm:max-h-[36vh] md:max-h-none overflow-y-auto overscroll-contain">
-                  <pre className="whitespace-pre-wrap break-words p-2.5 sm:p-3.5 text-[10px] sm:text-[12px] leading-[1.5] sm:leading-[1.65] text-foreground/90 font-mono selection:bg-brand-purple/30">
+                <div className="relative rounded-lg border border-white/8 bg-black/30 max-h-[28vh] sm:max-h-[36vh] md:max-h-none overflow-y-auto overscroll-contain" data-prompt-text data-allow-select>
+                  <pre className="whitespace-pre-wrap break-words p-2.5 sm:p-3.5 text-[10px] sm:text-[12px] leading-[1.5] sm:leading-[1.65] text-foreground/90 font-mono selection:bg-brand-purple/30" data-prompt-text>
                     {prompt.prompt}
                   </pre>
                   <button
                     type="button"
                     onClick={handleCopy}
+                    data-copy-prompt
                     className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-md border border-white/10 bg-black/50 px-1.5 py-1 text-[9px] sm:text-[10px] font-bold text-white/90 backdrop-blur-md transition-all hover:bg-black/70 active:scale-95"
                   >
                     {copied ? (
@@ -231,6 +243,7 @@ export function PromptModal({
                 <Button
                   type="button"
                   onClick={handleCopy}
+                  data-copy-prompt
                   className={cn(
                     "h-9 sm:h-10 flex-1 gap-1.5 text-[12px] sm:text-sm font-bold border-0 transition-all active:scale-[0.97]",
                     copied
@@ -267,6 +280,11 @@ export function PromptModal({
                   {isFavorite ? "Salvo" : "Salvar"}
                 </Button>
               </div>
+
+              {/* Protection message */}
+              <p className="mt-3 text-[9px] text-muted-foreground/40 text-center">
+                Imagens e referências são exibidas apenas dentro da biblioteca.
+              </p>
             </div>
           </div>
         )}

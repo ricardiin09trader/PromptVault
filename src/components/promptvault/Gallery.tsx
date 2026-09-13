@@ -14,6 +14,7 @@ import { PromptModal } from "./PromptModal";
 import { EmptyState } from "./EmptyState";
 import { UpdateBanner } from "./UpdateBanner";
 import { ManequimPopup } from "./ManequimPopup";
+import { ContentProtection } from "./ContentProtection";
 
 const PAGE_SIZE = 12;
 
@@ -76,6 +77,9 @@ export function Gallery() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Content Protection Layer */}
+      <ContentProtection />
+
       <div className="flex flex-1 min-h-0">
         <Sidebar filter={filter} onSelect={setFilter} />
         <MobileSidebar filter={filter} onSelect={setFilter} open={mobileOpen} onOpenChange={setMobileOpen} />
@@ -97,7 +101,7 @@ export function Gallery() {
 
             {/* Featured "Novidades" horizontal scroll - only on "all" filter */}
             {newPrompts.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-3" data-protected data-no-select>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="grid h-7 w-7 place-items-center rounded-lg bg-brand-gradient shadow-md shadow-brand-purple/20">
@@ -125,14 +129,16 @@ export function Gallery() {
                       onClick={() => openModal(prompt)}
                       className="group relative shrink-0 w-36 sm:w-44 snap-start rounded-xl overflow-hidden border border-white/10 bg-white/5 transition-all hover:border-brand-purple/30 hover:shadow-lg hover:shadow-brand-purple/10"
                     >
-                      <div className="aspect-[3/4] w-full bg-white/5 overflow-hidden">
+                      <div className="aspect-[3/4] w-full bg-white/5 overflow-hidden relative pv-watermark">
                         {prompt.image ? (
                           <img
                             src={prompt.image}
                             alt={prompt.title}
                             loading="lazy"
                             decoding="async"
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+                            draggable={false}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.05] protected-img"
+                            data-protected
                           />
                         ) : prompt.videoUrl ? (
                           <video
@@ -140,18 +146,21 @@ export function Gallery() {
                             muted
                             playsInline
                             preload="metadata"
-                            className="h-full w-full object-cover opacity-80"
+                            draggable={false}
+                            className="h-full w-full object-cover opacity-80 protected-video"
                           />
                         ) : null}
+                        {/* Invisible overlay to block direct image interaction */}
+                        <div className="absolute inset-0 z-[1]" aria-hidden="true" />
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
                       {/* NOVO badge */}
-                      <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-px text-[8px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+                      <span className="absolute left-2 top-2 z-[2] inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-1.5 py-px text-[8px] font-bold uppercase tracking-wider text-emerald-300 backdrop-blur-md">
                         <Sparkles className="h-2 w-2" />
                         NOVO
                       </span>
                       {/* Title overlay */}
-                      <div className="absolute bottom-0 left-0 right-0 p-2">
+                      <div className="absolute bottom-0 left-0 right-0 p-2 z-[2]">
                         <p className="text-[11px] font-semibold leading-tight line-clamp-2 text-white">{prompt.title}</p>
                       </div>
                     </button>
@@ -220,12 +229,15 @@ export function Gallery() {
         </main>
       </div>
       <footer className="mt-auto border-t border-white/5 bg-background/60 backdrop-blur-xl">
-        <div className="px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div className="flex items-center gap-2.5">
             <div className="grid h-7 w-7 place-items-center rounded-lg bg-brand-gradient"><Sparkles className="h-3.5 w-3.5 text-white" /></div>
             <p className="text-xs text-muted-foreground"><span className="font-semibold text-foreground">PromptVault</span>{" "}TikTok Shop · Seu acervo visual de prompts prontos para copiar, colar e usar.</p>
           </div>
-          <p className="text-[11px] text-muted-foreground/70">Acervo exclusivo para clientes · {PROMPTS.length} prompts disponíveis</p>
+          <div className="flex flex-col items-center sm:items-end gap-0.5">
+            <p className="text-[11px] text-muted-foreground/70">Acervo exclusivo para clientes · {PROMPTS.length} prompts disponíveis</p>
+            <p className="text-[9px] text-muted-foreground/40">Conteúdo protegido para membros da biblioteca.</p>
+          </div>
         </div>
       </footer>
       <UpdateBanner onNavigate={(cat) => setFilter({ kind: "category", value: cat as any })} onNavigateNovidades={() => setFilter({ kind: "novidades" })} />
